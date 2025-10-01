@@ -38,502 +38,557 @@
         return gk_fileData[filename] || "";
         }
         </script><!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shanto Style House - অ্যাডমিন & রিটেল প্যানেল</title>
+    <title>Stock Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; }
-        .hidden { display: none; }
-        .cart-hidden { transform: translateX(100%); }
-        .cart-visible { transform: translateX(0); }
-        .btn { transition: all 0.3s ease; }
-        .btn:hover { transform: translateY(-2px); }
-    </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Login Page -->
-    <div id="login-page" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-indigo-100">
-        <div class="max-w-md w-full bg-white p-8 rounded-xl shadow-2xl">
-            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Shanto Style House</h1>
-            <div class="flex justify-center space-x-4 mb-6">
-                <button id="show-login" class="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 btn">লগইন</button>
-                <button id="show-register" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-400 btn">রেজিস্টার</button>
+<body class="bg-gray-100 font-sans">
+    <!-- Login Section -->
+    <div id="loginSection" class="flex items-center justify-center min-h-screen">
+        <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+            <h2 class="text-2xl font-semibold mb-4 text-center">Login</h2>
+            <div class="grid grid-cols-1 gap-4">
+                <input id="loginUsername" type="text" placeholder="Username" class="p-2 border rounded">
+                <input id="loginPassword" type="password" placeholder="Password" class="p-2 border rounded">
+                <button id="loginBtn" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Login</button>
             </div>
-
-            <!-- Login Form -->
-            <div id="login-form">
-                <p class="text-center text-gray-600 mb-6">লগইন করো</p>
-                <div class="space-y-4">
-                    <select id="login-user-type" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
-                        <option value="retail">রিটেল (কাস্টমার)</option>
-                        <option value="admin">অ্যাডমিন</option>
-                    </select>
-                    <input type="text" id="login-username" placeholder="ইউজারনেম" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
-                    <input type="password" id="login-password" placeholder="পাসওয়ার্ড" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
-                    <button onclick="login()" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 btn">লগইন</button>
-                </div>
-                <p class="text-center mt-4 text-sm text-gray-500">
-                    ডেমো: অ্যাডমিন - admin/admin | রিটেল - user/user
-                </p>
-            </div>
-
-            <!-- Register Form -->
-            <div id="register-form" class="hidden">
-                <p class="text-center text-gray-600 mb-6">নতুন অ্যাকাউন্ট তৈরি করো</p>
-                <div class="space-y-4">
-                    <select id="register-user-type" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
-                        <option value="retail">রিটেল (কাস্টমার)</option>
-                        <option value="admin">অ্যাডমিন</option>
-                    </select>
-                    <input type="text" id="register-username" placeholder="ইউজারনেম" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
-                    <input type="password" id="register-password" placeholder="পাসওয়ার্ড" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
-                    <input type="password" id="register-confirm-password" placeholder="পাসওয়ার্ড নিশ্চিত করো" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
-                    <button onclick="register()" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 btn">রেজিস্টার</button>
-                </div>
-            </div>
+            <p id="loginError" class="text-red-600 mt-2 hidden">Invalid username or password.</p>
         </div>
     </div>
 
-    <!-- Main App -->
-    <div id="main-app" class="hidden">
-        <!-- Header -->
-        <header class="bg-gradient-to-r from-purple-700 to-indigo-600 text-white py-4 sticky top-0 z-50 shadow-md">
-            <div class="container mx-auto px-4 flex justify-between items-center">
-                <h1 class="text-2xl font-bold">Shanto Style House</h1>
-                <div class="flex space-x-4 items-center">
-                    <span id="welcome-user" class="text-sm"></span>
-                    <button onclick="logout()" class="bg-red-500 text-white px-4 py-1 rounded-lg hover:bg-red-600 btn">লগআউট</button>
-                    <button id="cart-btn" onclick="toggleCart()" class="bg-white text-purple-600 px-4 py-1 rounded-lg hover:bg-gray-100 btn hidden">কার্ট (<span id="cart-count">0</span>)</button>
-                </div>
-            </div>
-        </header>
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">Stock Management System</h1>
 
-        <!-- Admin Panel -->
-        <div id="admin-panel" class="container mx-auto px-4 py-8 hidden">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6">অ্যাডমিন প্যানেল</h2>
-            
-            <!-- Add Product Form -->
-            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
-                <h3 class="text-xl font-semibold mb-4">নতুন প্রোডাক্ট যোগ করো</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" id="product-name" placeholder="প্রোডাক্ট নাম" class="p-3 border rounded-lg">
-                    <input type="number" id="product-price" placeholder="মূল্য (৳)" class="p-3 border rounded-lg">
-                    <input type="text" id="product-image" placeholder="ইমেজ URL" class="p-3 border rounded-lg">
-                    <input type="text" id="product-category" placeholder="ক্যাটাগরি (যেমন: শার্ট, জ্যাকেট)" class="p-3 border rounded-lg">
-                </div>
-                <textarea id="product-desc" placeholder="বর্ণনা" class="w-full p-3 border rounded-lg mt-4" rows="3"></textarea>
-                <button onclick="addProduct()" class="mt-4 bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 btn">যোগ করো</button>
-            </div>
+        <!-- Navigation Tabs -->
+        <div class="flex justify-center mb-6">
+            <button id="dashboardTab" class="px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700">Dashboard</button>
+            <button id="addProductTab" class="px-4 py-2 bg-gray-600 text-white hover:bg-gray-700">Add Product</button>
+            <button id="sellProductTab" class="px-4 py-2 bg-gray-600 text-white hover:bg-gray-700">Sell Product</button>
+            <button id="salesRecordsTab" class="px-4 py-2 bg-gray-600 text-white hover:bg-gray-700">Sales Records</button>
+            <button id="profileTab" class="px-4 py-2 bg-gray-600 text-white rounded-r-lg hover:bg-gray-700">Profile</button>
+        </div>
 
-            <!-- Product List for Edit/Delete -->
-            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
-                <h3 class="text-xl font-semibold mb-4">প্রোডাক্ট লিস্ট</h3>
-                <div id="admin-product-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-            </div>
-
-            <!-- Sales View -->
-            <div class="bg-white p-6 rounded-xl shadow-lg">
-                <h3 class="text-xl font-semibold mb-4">সেলস হিস্ট্রি</h3>
-                <button onclick="downloadSalesCSV()" class="mb-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 btn">সেলস CSV ডাউনলোড</button>
-                <ul id="sales-list" class="space-y-2"></ul>
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="hidden">
+            <h2 class="text-2xl font-semibold mb-4">Stock Dashboard</h2>
+            <button id="downloadStockBtn" class="mb-4 bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Download Stock Data (CSV)</button>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white shadow-md rounded-lg">
+                    <thead>
+                        <tr class="bg-blue-600 text-white">
+                            <th class="py-2 px-4">SL</th>
+                            <th class="py-2 px-4">Code</th>
+                            <th class="py-2 px-4">Product Name</th>
+                            <th class="py-2 px-4">Unit</th>
+                            <th class="py-2 px-4">TP</th>
+                            <th class="py-2 px-4">Saleable Stock Qty.</th>
+                            <th class="py-2 px-4">Damage Stock Qty.</th>
+                            <th class="py-2 px-4">Free Qty.</th>
+                            <th class="py-2 px-4">Saleable Amount</th>
+                            <th class="py-2 px-4">Damage Amount</th>
+                            <th class="py-2 px-4">Total Amount</th>
+                            <th class="py-2 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTableBody"></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Retail Panel -->
-        <div id="retail-panel" class="container mx-auto px-4 py-8 hidden">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6">রিটেল প্যানেল</h2>
+        <!-- Add Product Section -->
+        <div id="addProduct" class="hidden">
+            <h2 class="text-2xl font-semibold mb-4">Add New Product</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="grid grid-cols-1 gap-4">
+                    <input id="productCode" type="text" placeholder="Product Code" class="p-2 border rounded">
+                    <input id="productName" type="text" placeholder="Product Name" class="p-2 border rounded">
+                    <input id="productUnit" type="text" placeholder="Unit (e.g., pcs, kg)" class="p-2 border rounded">
+                    <input id="productTP" type="number" placeholder="Trade Price (TP)" class="p-2 border rounded">
+                    <input id="saleableQty" type="number" placeholder="Saleable Stock Quantity" class="p-2 border rounded">
+                    <input id="damageQty" type="number" placeholder="Damage Stock Quantity" class="p-2 border rounded">
+                    <input id="freeQty" type="number" placeholder="Free Quantity" class="p-2 border rounded">
+                    <button id="addProductBtn" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Add Product</button>
+                </div>
+            </div>
+        </div>
 
-            <!-- Filter Section -->
-            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
-                <h3 class="text-xl font-semibold mb-4">প্রোডাক্ট ফিল্টার</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <select id="filter-category" class="p-3 border rounded-lg">
-                        <option value="">সব ক্যাটাগরি</option>
-                        <option value="শার্ট">শার্ট</option>
-                        <option value="জ্যাকেট">জ্যাকেট</option>
-                        <option value="শু">শু</option>
+        <!-- Sell Product Section -->
+        <div id="sellProduct" class="hidden">
+            <h2 class="text-2xl font-semibold mb-4">Sell Product</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="grid grid-cols-1 gap-4">
+                    <input id="searchProductCode" type="text" placeholder="Search by Product Code" class="p-2 border rounded">
+                    <select id="sellProductCode" class="p-2 border rounded">
+                        <option value="">Select Product</option>
                     </select>
-                    <input type="number" id="filter-price-min" placeholder="ন্যূনতম মূল্য" class="p-3 border rounded-lg">
-                    <input type="number" id="filter-price-max" placeholder="সর্বোচ্চ মূল্য" class="p-3 border rounded-lg">
-                </div>
-                <button onclick="filterProducts()" class="mt-4 bg-purple-600 text-white py-2 px-6 rounded-lg hover:bg-purple-700 btn">ফিল্টার করো</button>
-                <button onclick="resetFilter()" class="mt-4 ml-2 bg-gray-300 text-gray-800 py-2 px-6 rounded-lg hover:bg-gray-400 btn">রিসেট</button>
-            </div>
-
-            <!-- Products Section -->
-            <section id="products">
-                <h3 class="text-2xl font-semibold mb-6">উপলব্ধ প্রোডাক্টস</h3>
-                <div id="product-list" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
-            </section>
-        </div>
-
-        <!-- Cart Sidebar -->
-        <div id="cart" class="fixed top-0 right-0 h-full w-80 bg-white shadow-xl p-6 transition-transform duration-300 cart-hidden z-50">
-            <h3 class="text-xl font-bold mb-4">কার্ট</h3>
-            <ul id="cart-items" class="space-y-2 mb-4"></ul>
-            <p class="font-semibold mb-4">টোটাল: ৳<span id="total">0</span></p>
-            <button onclick="checkout()" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 btn mb-2">চেকআউট</button>
-            <button onclick="toggleCart()" class="w-full bg-gray-300 text-gray-800 py-2 rounded-lg hover:bg-gray-400 btn">বন্ধ করো</button>
-        </div>
-
-        <!-- Footer -->
-        <footer class="bg-gray-800 text-white py-4 mt-12">
-            <div class="container mx-auto px-4 text-center">
-                <p>&copy; 2025 Shanto Style House. সর্বস্বত্ব সংরক্ষিত।</p>
-                <div class="flex justify-center space-x-4 mt-2">
-                    <a href="#" class="hover:text-yellow-300">ফেসবুক</a>
-                    <a href="#" class="hover:text-yellow-300">ইনস্টাগ্রাম</a>
-                    <a href="#" class="hover:text-yellow-300">টুইটার</a>
+                    <input id="sellQty" type="number" placeholder="Quantity to Sell" class="p-2 border rounded">
+                    <button id="sellProductBtn" class="bg-green-600 text-white p-2 rounded hover:bg-green-700">Sell Product</button>
                 </div>
             </div>
-        </footer>
+            <h3 class="text-xl font-semibold mb-4">Available Products for Sale</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white shadow-md rounded-lg">
+                    <thead>
+                        <tr class="bg-blue-600 text-white">
+                            <th class="py-2 px-4">SL</th>
+                            <th class="py-2 px-4">Code</th>
+                            <th class="py-2 px-4">Product Name</th>
+                            <th class="py-2 px-4">Unit</th>
+                            <th class="py-2 px-4">TP</th>
+                            <th class="py-2 px-4">Saleable Stock Qty.</th>
+                            <th class="py-2 px-4">Damage Stock Qty.</th>
+                            <th class="py-2 px-4">Free Qty.</th>
+                            <th class="py-2 px-4">Saleable Amount</th>
+                            <th class="py-2 px-4">Damage Amount</th>
+                            <th class="py-2 px-4">Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sellTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sales Records Section -->
+        <div id="salesRecords" class="hidden">
+            <h2 class="text-2xl font-semibold mb-4">Sales Records</h2>
+            <button id="downloadSalesBtn" class="mb-4 bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Download Sales Data (CSV)</button>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white shadow-md rounded-lg">
+                    <thead>
+                        <tr class="bg-blue-600 text-white">
+                            <th class="py-2 px-4">SL</th>
+                            <th class="py-2 px-4">Product Code</th>
+                            <th class="py-2 px-4">Product Name</th>
+                            <th class="py-2 px-4">Quantity Sold</th>
+                            <th class="py-2 px-4">Sale Amount</th>
+                            <th class="py-2 px-4">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile" class="hidden">
+            <h2 class="text-2xl font-semibold mb-4">Profile</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="grid grid-cols-1 gap-4">
+                    <input id="newUsername" type="text" placeholder="New Username" class="p-2 border rounded">
+                    <input id="newPassword" type="password" placeholder="New Password" class="p-2 border rounded">
+                    <button id="updateProfileBtn" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Update Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Product Modal -->
+        <div id="editProductModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+            <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+                <h3 class="text-xl font-semibold mb-4">Edit Product</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <input id="editProductCode" type="text" placeholder="Product Code" class="p-2 border rounded" readonly>
+                    <input id="editProductName" type="text" placeholder="Product Name" class="p-2 border rounded">
+                    <input id="editProductUnit" type="text" placeholder="Unit (e.g., pcs, kg)" class="p-2 border rounded">
+                    <input id="editProductTP" type="number" placeholder="Trade Price (TP)" class="p-2 border rounded">
+                    <input id="editSaleableQty" type="number" placeholder="Saleable Stock Quantity" class="p-2 border rounded">
+                    <input id="editDamageQty" type="number" placeholder="Damage Stock Quantity" class="p-2 border rounded">
+                    <input id="editFreeQty" type="number" placeholder="Free Quantity" class="p-2 border rounded">
+                    <div class="flex justify-end gap-2">
+                        <button id="saveEditBtn" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Save</button>
+                        <button id="cancelEditBtn" class="bg-gray-600 text-white p-2 rounded hover:bg-gray-700">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Data Storage
-        let products = JSON.parse(localStorage.getItem('products')) || [
-            { id: 1, name: 'ট্রেন্ডি শার্ট', price: 1500, image: 'https://via.placeholder.com/300x200?text=Trendy+Shirt', desc: 'স্টাইলিশ শার্ট', category: 'শার্ট' },
-            { id: 2, name: 'ডিজাইনার জ্যাকেট', price: 3000, image: 'https://via.placeholder.com/300x200?text=Designer+Jacket', desc: 'শীতের জ্যাকেট', category: 'জ্যাকেট' },
-            { id: 3, name: 'ক্যাজুয়াল শু', price: 2500, image: 'https://via.placeholder.com/300x200?text=Casual+Shoes', desc: 'কমফোর্টেবল শু', category: 'শু' }
-        ];
-        let sales = JSON.parse(localStorage.getItem('sales')) || [];
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let users = JSON.parse(localStorage.getItem('users')) || {
-            admin: { username: 'admin', password: 'admin', type: 'admin' },
-            user: { username: 'user', password: 'user', type: 'retail' }
+        // Initialize credentials
+        let credentials = JSON.parse(localStorage.getItem('credentials')) || { username: 'admin', password: '0189' };
+        let isLoggedIn = false;
+
+        // Load data from localStorage
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let salesRecords = JSON.parse(localStorage.getItem('salesRecords')) || [];
+
+        // Check login status
+        function checkLogin() {
+            if (!isLoggedIn) {
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+            } else {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+            }
+        }
+
+        // Login functionality
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorMsg = document.getElementById('loginError');
+
+            if (username === credentials.username && password === credentials.password) {
+                isLoggedIn = true;
+                checkLogin();
+                updateDashboard();
+                updateProductDropdown();
+                updateSellTable();
+                updateSalesRecords();
+                document.getElementById('loginUsername').value = '';
+                document.getElementById('loginPassword').value = '';
+                errorMsg.classList.add('hidden');
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        });
+
+        // Tab switching logic
+        const tabs = {
+            dashboard: document.getElementById('dashboard'),
+            addProduct: document.getElementById('addProduct'),
+            sellProduct: document.getElementById('sellProduct'),
+            salesRecords: document.getElementById('salesRecords'),
+            profile: document.getElementById('profile'),
         };
-        let currentUser = null;
+        const tabButtons = {
+            dashboard: document.getElementById('dashboardTab'),
+            addProduct: document.getElementById('addProductTab'),
+            sellProduct: document.getElementById('sellProductTab'),
+            salesRecords: document.getElementById('salesRecordsTab'),
+            profile: document.getElementById('profileTab'),
+        };
 
-        // Toggle Login/Register Forms
-        document.getElementById('show-login').addEventListener('click', () => {
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('register-form').classList.add('hidden');
-        });
-        document.getElementById('show-register').addEventListener('click', () => {
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('register-form').classList.remove('hidden');
-        });
-
-        function register() {
-            const type = document.getElementById('register-user-type').value;
-            const username = document.getElementById('register-username').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('register-confirm-password').value;
-
-            if (!username || !password || !confirmPassword) {
-                alert('সব ফিল্ড পূরণ করো!');
-                return;
-            }
-            if (password !== confirmPassword) {
-                alert('পাসওয়ার্ড মেলেনি!');
-                return;
-            }
-            if (users[username]) {
-                alert('ইউজারনেম ইতিমধ্যে ব্যবহৃত হয়েছে!');
-                return;
-            }
-
-            users[username] = { username, password, type };
-            localStorage.setItem('users', JSON.stringify(users));
-            alert('অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! লগইন করো।');
-            clearRegisterForm();
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('register-form').classList.add('hidden');
+        function showTab(tabName) {
+            Object.values(tabs).forEach(tab => tab.classList.add('hidden'));
+            Object.values(tabButtons).forEach(btn => btn.classList.remove('bg-blue-600'));
+            Object.values(tabButtons).forEach(btn => btn.classList.add('bg-gray-600'));
+            tabs[tabName].classList.remove('hidden');
+            tabButtons[tabName].classList.remove('bg-gray-600');
+            tabButtons[tabName].classList.add('bg-blue-600');
         }
 
-        function clearRegisterForm() {
-            document.getElementById('register-user-type').value = 'retail';
-            document.getElementById('register-username').value = '';
-            document.getElementById('register-password').value = '';
-            document.getElementById('register-confirm-password').value = '';
-        }
+        tabButtons.dashboard.addEventListener('click', () => showTab('dashboard'));
+        tabButtons.addProduct.addEventListener('click', () => showTab('addProduct'));
+        tabButtons.sellProduct.addEventListener('click', () => showTab('sellProduct'));
+        tabButtons.salesRecords.addEventListener('click', () => showTab('salesRecords'));
+        tabButtons.profile.addEventListener('click', () => showTab('profile'));
 
-        function login() {
-            const type = document.getElementById('login-user-type').value;
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
-
-            if (users[username] && users[username].password === password && users[username].type === type) {
-                currentUser = { username, type };
-                document.getElementById('login-page').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                document.getElementById('welcome-user').textContent = `স্বাগতম, ${username}!`;
-                
-                if (type === 'admin') {
-                    document.getElementById('admin-panel').classList.remove('hidden');
-                    displayAdminProducts();
-                    viewSales();
-                } else {
-                    document.getElementById('retail-panel').classList.remove('hidden');
-                    document.getElementById('cart-btn').classList.remove('hidden');
-                    displayProducts();
-                }
-            } else {
-                alert('ভুল ইউজারনেম বা পাসওয়ার্ড!');
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            document.getElementById('main-app').classList.add('hidden');
-            document.getElementById('login-page').classList.remove('hidden');
-            document.getElementById('admin-panel').classList.add('hidden');
-            document.getElementById('retail-panel').classList.add('hidden');
-            document.getElementById('cart-btn').classList.add('hidden');
-            clearLoginFields();
-        }
-
-        function clearLoginFields() {
-            document.getElementById('login-username').value = '';
-            document.getElementById('login-password').value = '';
-        }
-
-        // Admin Functions
-        function addProduct() {
-            if (currentUser.type !== 'admin') {
-                alert('শুধু অ্যাডমিন প্রোডাক্ট যোগ করতে পারে!');
-                return;
-            }
-            const name = document.getElementById('product-name').value;
-            const price = parseInt(document.getElementById('product-price').value);
-            const image = document.getElementById('product-image').value;
-            const category = document.getElementById('product-category').value;
-            const desc = document.getElementById('product-desc').value;
-
-            if (name && price && image && category && desc) {
-                const newProduct = {
-                    id: Date.now(),
-                    name,
-                    price,
-                    image,
-                    desc,
-                    category
-                };
-                products.push(newProduct);
-                localStorage.setItem('products', JSON.stringify(products));
-                alert('প্রোডাক্ট যোগ হয়েছে!');
-                clearProductForm();
-                displayAdminProducts();
-                displayProducts();
-            } else {
-                alert('সব ফিল্ড পূরণ করো!');
-            }
-        }
-
-        function editProduct(id) {
-            if (currentUser.type !== 'admin') {
-                alert('শুধু অ্যাডমিন প্রোডাক্ট এডিট করতে পারে!');
-                return;
-            }
-            const product = products.find(p => p.id === id);
-            if (product) {
-                document.getElementById('product-name').value = product.name;
-                document.getElementById('product-price').value = product.price;
-                document.getElementById('product-image').value = product.image;
-                document.getElementById('product-category').value = product.category;
-                document.getElementById('product-desc').value = product.desc;
-
-                const saveButton = document.createElement('button');
-                saveButton.textContent = 'আপডেট করো';
-                saveButton.className = 'mt-4 bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 btn';
-                saveButton.onclick = () => {
-                    product.name = document.getElementById('product-name').value;
-                    product.price = parseInt(document.getElementById('product-price').value);
-                    product.image = document.getElementById('product-image').value;
-                    product.category = document.getElementById('product-category').value;
-                    product.desc = document.getElementById('product-desc').value;
-                    localStorage.setItem('products', JSON.stringify(products));
-                    alert('প্রোডাক্ট আপডেট হয়েছে!');
-                    clearProductForm();
-                    displayAdminProducts();
-                    displayProducts();
-                    saveButton.remove();
-                };
-                document.getElementById('product-desc').parentElement.appendChild(saveButton);
-            }
-        }
-
-        function deleteProduct(id) {
-            if (currentUser.type !== 'admin') {
-                alert('শুধু অ্যাডমিন প্রোডাক্ট ডিলিট করতে পারে!');
-                return;
-            }
-            if (confirm('প্রোডাক্ট ডিলিট করতে চাও?')) {
-                products = products.filter(p => p.id !== id);
-                localStorage.setItem('products', JSON.stringify(products));
-                displayAdminProducts();
-                displayProducts();
-            }
-        }
-
-        function clearProductForm() {
-            document.getElementById('product-name').value = '';
-            document.getElementById('product-price').value = '';
-            document.getElementById('product-image').value = '';
-            document.getElementById('product-category').value = '';
-            document.getElementById('product-desc').value = '';
-        }
-
-        function displayAdminProducts() {
-            const adminProductList = document.getElementById('admin-product-list');
-            adminProductList.innerHTML = '';
-            products.forEach(product => {
-                const div = document.createElement('div');
-                div.className = 'bg-gray-50 p-4 rounded-lg shadow';
-                div.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-32 object-cover rounded-t-lg">
-                    <h3 class="text-lg font-semibold mt-2">${product.name}</h3>
-                    <p class="text-gray-600">ক্যাটাগরি: ${product.category}</p>
-                    <p class="text-green-600 font-bold">৳${product.price}</p>
-                    <p class="text-gray-600">${product.desc}</p>
-                    <div class="flex space-x-2 mt-2">
-                        <button onclick="editProduct(${product.id})" class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 btn">এডিট</button>
-                        <button onclick="deleteProduct(${product.id})" class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 btn">ডিলিট</button>
-                    </div>
+        // Update dashboard table
+        function updateDashboard() {
+            const tableBody = document.getElementById('stockTableBody');
+            tableBody.innerHTML = '';
+            products.forEach((product, index) => {
+                const saleableAmount = product.saleableQty * product.tp;
+                const damageAmount = product.damageQty * product.tp;
+                const totalAmount = saleableAmount + damageAmount;
+                const row = `
+                    <tr class="border-b">
+                        <td class="py-2 px-4">${index + 1}</td>
+                        <td class="py-2 px-4">${product.code}</td>
+                        <td class="py-2 px-4">${product.name}</td>
+                        <td class="py-2 px-4">${product.unit}</td>
+                        <td class="py-2 px-4">${product.tp}</td>
+                        <td class="py-2 px-4">${product.saleableQty}</td>
+                        <td class="py-2 px-4">${product.damageQty}</td>
+                        <td class="py-2 px-4">${product.freeQty}</td>
+                        <td class="py-2 px-4">${saleableAmount.toFixed(2)}</td>
+                        <td class="py-2 px-4">${damageAmount.toFixed(2)}</td>
+                        <td class="py-2 px-4">${totalAmount.toFixed(2)}</td>
+                        <td class="py-2 px-4 flex gap-2">
+                            <button class="edit-btn bg-yellow-600 text-white px-2 py-1 rounded hover:bg-yellow-700" data-code="${product.code}">Edit</button>
+                            <button class="delete-btn bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700" data-code="${product.code}">Delete</button>
+                        </td>
+                    </tr>
                 `;
-                adminProductList.appendChild(div);
+                tableBody.innerHTML += row;
+            });
+
+            // Attach event listeners for edit and delete buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.removeEventListener('click', handleEditClick); // Remove previous listeners to prevent duplicates
+                btn.addEventListener('click', handleEditClick);
+            });
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.removeEventListener('click', handleDeleteClick); // Remove previous listeners to prevent duplicates
+                btn.addEventListener('click', handleDeleteClick);
             });
         }
 
-        function viewSales() {
-            const salesList = document.getElementById('sales-list');
-            salesList.innerHTML = '';
-            if (sales.length === 0) {
-                salesList.innerHTML = '<li class="text-gray-500">কোনো সেলস নেই।</li>';
-            } else {
-                sales.forEach(sale => {
-                    const li = document.createElement('li');
-                    li.className = 'border p-2 rounded';
-                    li.innerHTML = `<strong>${sale.date}</strong>: ${sale.items.map(item => `${item.name} x${item.quantity}`).join(', ')} - টোটাল: ৳${sale.total}`;
-                    salesList.appendChild(li);
-                });
-            }
+        // Event handler for edit button
+        function handleEditClick(event) {
+            const code = event.target.dataset.code;
+            openEditModal(code);
         }
 
-        function downloadSalesCSV() {
-            if (sales.length === 0) {
-                alert('কোনো সেলস ডেটা নেই!');
-                return;
-            }
-            const headers = ['তারিখ', 'প্রোডাক্ট', 'পরিমাণ', 'টোটাল (৳)'];
-            const rows = sales.map(sale => [
-                sale.date,
-                sale.items.map(item => `${item.name} x${item.quantity}`).join('; '),
-                sale.items.reduce((sum, item) => sum + item.quantity, 0),
-                sale.total
-            ]);
-            const csvContent = [
-                headers.join(','),
-                ...rows.map(row => row.join(','))
-            ].join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'sales_history.csv';
-            link.click();
+        // Event handler for delete button
+        function handleDeleteClick(event) {
+            const code = event.target.dataset.code;
+            deleteProduct(code);
         }
 
-        // Retail Functions
-        function displayProducts() {
-            const productList = document.getElementById('product-list');
-            productList.innerHTML = '';
-            const filteredProducts = filterProducts();
-            if (filteredProducts.length === 0) {
-                productList.innerHTML = '<p class="text-gray-500 text-center">কোনো প্রোডাক্ট পাওয়া যায়নি।</p>';
-                return;
-            }
+        // Update sell products table with search filter
+        function updateSellTable(searchTerm = '') {
+            const tableBody = document.getElementById('sellTableBody');
+            tableBody.innerHTML = '';
+            let sl = 1;
+            const filteredProducts = products.filter(product => 
+                product.saleableQty > 0 && 
+                (searchTerm === '' || product.code.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
             filteredProducts.forEach(product => {
-                const div = document.createElement('div');
-                div.className = 'bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition';
-                div.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-t-lg">
-                    <h3 class="text-xl font-semibold mt-4">${product.name}</h3>
-                    <p class="text-gray-600">ক্যাটাগরি: ${product.category}</p>
-                    <p class="text-gray-600 mt-2">${product.desc}</p>
-                    <p class="text-green-600 font-bold mt-2">৳${product.price}</p>
-                    <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})" class="mt-4 w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 btn">কার্টে যোগ করো</button>
+                const saleableAmount = product.saleableQty * product.tp;
+                const damageAmount = product.damageQty * product.tp;
+                const totalAmount = saleableAmount + damageAmount;
+                const row = `
+                    <tr class="border-b">
+                        <td class="py-2 px-4">${sl++}</td>
+                        <td class="py-2 px-4">${product.code}</td>
+                        <td class="py-2 px-4">${product.name}</td>
+                        <td class="py-2 px-4">${product.unit}</td>
+                        <td class="py-2 px-4">${product.tp}</td>
+                        <td class="py-2 px-4">${product.saleableQty}</td>
+                        <td class="py-2 px-4">${product.damageQty}</td>
+                        <td class="py-2 px-4">${product.freeQty}</td>
+                        <td class="py-2 px-4">${saleableAmount.toFixed(2)}</td>
+                        <td class="py-2 px-4">${damageAmount.toFixed(2)}</td>
+                        <td class="py-2 px-4">${totalAmount.toFixed(2)}</td>
+                    </tr>
                 `;
-                productList.appendChild(div);
+                tableBody.innerHTML += row;
             });
         }
 
-        function filterProducts() {
-            const category = document.getElementById('filter-category').value;
-            const minPrice = parseInt(document.getElementById('filter-price-min').value) || 0;
-            const maxPrice = parseInt(document.getElementById('filter-price-max').value) || Infinity;
-
-            return products.filter(product => {
-                const matchCategory = category ? product.category === category : true;
-                const matchPrice = product.price >= minPrice && product.price <= maxPrice;
-                return matchCategory && matchPrice;
+        // Update product dropdown for selling
+        function updateProductDropdown() {
+            const dropdown = document.getElementById('sellProductCode');
+            dropdown.innerHTML = '<option value="">Select Product</option>';
+            products.forEach(product => {
+                if (product.saleableQty > 0) {
+                    const option = document.createElement('option');
+                    option.value = product.code;
+                    option.textContent = `${product.name} (${product.code})`;
+                    dropdown.appendChild(option);
+                }
             });
         }
 
-        function resetFilter() {
-            document.getElementById('filter-category').value = '';
-            document.getElementById('filter-price-min').value = '';
-            document.getElementById('filter-price-max').value = '';
-            displayProducts();
+        // Update sales records table
+        function updateSalesRecords() {
+            const tableBody = document.getElementById('salesTableBody');
+            tableBody.innerHTML = '';
+            salesRecords.forEach((sale, index) => {
+                const row = `
+                    <tr class="border-b">
+                        <td class="py-2 px-4">${index + 1}</td>
+                        <td class="py-2 px-4">${sale.code}</td>
+                        <td class="py-2 px-4">${sale.name}</td>
+                        <td class="py-2 px-4">${sale.quantity}</td>
+                        <td class="py-2 px-4">${sale.saleAmount.toFixed(2)}</td>
+                        <td class="py-2 px-4">${sale.date}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
         }
 
-        function addToCart(id, name, price) {
-            const existingItem = cart.find(item => item.id === id);
-            if (existingItem) {
-                existingItem.quantity += 1;
+        // Download data as CSV
+        function downloadCSV(data, filename, headers) {
+            let csv = headers.join(',') + '\n';
+            data.forEach(row => {
+                csv += row.join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Download stock data
+        document.getElementById('downloadStockBtn').addEventListener('click', () => {
+            const headers = ['SL', 'Code', 'Product Name', 'Unit', 'TP', 'Saleable Stock Qty.', 'Damage Stock Qty.', 'Free Qty.', 'Saleable Amount', 'Damage Amount', 'Total Amount'];
+            const data = products.map((product, index) => {
+                const saleableAmount = product.saleableQty * product.tp;
+                const damageAmount = product.damageQty * product.tp;
+                const totalAmount = saleableAmount + damageAmount;
+                return [
+                    index + 1,
+                    product.code,
+                    product.name,
+                    product.unit,
+                    product.tp,
+                    product.saleableQty,
+                    product.damageQty,
+                    product.freeQty,
+                    saleableAmount.toFixed(2),
+                    damageAmount.toFixed(2),
+                    totalAmount.toFixed(2)
+                ];
+            });
+            downloadCSV(data, 'stock_data.csv', headers);
+        });
+
+        // Download sales data
+        document.getElementById('downloadSalesBtn').addEventListener('click', () => {
+            const headers = ['SL', 'Product Code', 'Product Name', 'Quantity Sold', 'Sale Amount', 'Date'];
+            const data = salesRecords.map((sale, index) => [
+                index + 1,
+                sale.code,
+                sale.name,
+                sale.quantity,
+                sale.saleAmount.toFixed(2),
+                sale.date
+            ]);
+            downloadCSV(data, 'sales_records.csv', headers);
+        });
+
+        // Add product
+        document.getElementById('addProductBtn').addEventListener('click', () => {
+            const product = {
+                code: document.getElementById('productCode').value,
+                name: document.getElementById('productName').value,
+                unit: document.getElementById('productUnit').value,
+                tp: parseFloat(document.getElementById('productTP').value) || 0,
+                saleableQty: parseInt(document.getElementById('saleableQty').value) || 0,
+                damageQty: parseInt(document.getElementById('damageQty').value) || 0,
+                freeQty: parseInt(document.getElementById('freeQty').value) || 0,
+            };
+
+            if (product.code && product.name && product.unit && product.tp > 0) {
+                products.push(product);
+                localStorage.setItem('products', JSON.stringify(products));
+                updateDashboard();
+                updateProductDropdown();
+                updateSellTable();
+                document.querySelectorAll('#addProduct input').forEach(input => input.value = '');
+                alert('Product added successfully!');
             } else {
-                cart.push({ id, name, price, quantity: 1 });
+                alert('Please fill all required fields with valid data.');
             }
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCart();
-            alert(`${name} কার্টে যোগ হয়েছে!`);
-            toggleCart();
-        }
+        });
 
-        function updateCart() {
-            document.getElementById('cart-count').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
-            const cartItems = document.getElementById('cart-items');
-            cartItems.innerHTML = '';
-            let total = 0;
-            cart.forEach(item => {
-                const li = document.createElement('li');
-                li.innerHTML = `${item.name} x${item.quantity} - ৳${item.price * item.quantity}`;
-                cartItems.appendChild(li);
-                total += item.price * item.quantity;
-            });
-            document.getElementById('total').textContent = total;
-        }
+        // Sell product
+        document.getElementById('sellProductBtn').addEventListener('click', () => {
+            const code = document.getElementById('sellProductCode').value;
+            const qty = parseInt(document.getElementById('sellQty').value) || 0;
+            const product = products.find(p => p.code === code);
 
-        function toggleCart() {
-            const cartDiv = document.getElementById('cart');
-            cartDiv.classList.toggle('cart-hidden');
-            cartDiv.classList.toggle('cart-visible');
-            updateCart();
-        }
-
-        function checkout() {
-            if (cart.length === 0) {
-                alert('কার্ট খালি!');
-            } else {
-                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const sale = {
-                    date: new Date().toLocaleString('bn-BD'),
-                    items: cart.map(item => ({ name: item.name, quantity: item.quantity })),
-                    total
+            if (product && qty > 0 && qty <= product.saleableQty) {
+                product.saleableQty -= qty;
+                const saleAmount = qty * product.tp;
+                const saleRecord = {
+                    code: product.code,
+                    name: product.name,
+                    quantity: qty,
+                    saleAmount: saleAmount,
+                    date: new Date().toLocaleString('en-GB', { timeZone: 'Asia/Dhaka' })
                 };
-                sales.push(sale);
-                localStorage.setItem('sales', JSON.stringify(sales));
-                alert(`চেকআউট সাকসেসফুল! টোটাল: ৳${total}`);
-                cart = [];
-                localStorage.setItem('cart', JSON.stringify(cart));
-                updateCart();
-                toggleCart();
-                if (currentUser.type === 'admin') viewSales();
+                salesRecords.push(saleRecord);
+                localStorage.setItem('products', JSON.stringify(products));
+                localStorage.setItem('salesRecords', JSON.stringify(salesRecords));
+                updateDashboard();
+                updateProductDropdown();
+                updateSellTable();
+                updateSalesRecords();
+                document.getElementById('sellQty').value = '';
+                alert('Sale recorded successfully!');
+            } else {
+                alert('Invalid product or quantity. Ensure quantity is available.');
+            }
+        });
+
+        // Search product by code
+        document.getElementById('searchProductCode').addEventListener('input', (e) => {
+            updateSellTable(e.target.value);
+        });
+
+        // Open edit modal
+        function openEditModal(code) {
+            const product = products.find(p => p.code === code);
+            if (product) {
+                document.getElementById('editProductCode').value = product.code;
+                document.getElementById('editProductName').value = product.name;
+                document.getElementById('editProductUnit').value = product.unit;
+                document.getElementById('editProductTP').value = product.tp;
+                document.getElementById('editSaleableQty').value = product.saleableQty;
+                document.getElementById('editDamageQty').value = product.damageQty;
+                document.getElementById('editFreeQty').value = product.freeQty;
+                document.getElementById('editProductModal').classList.remove('hidden');
             }
         }
+
+        // Save edited product
+        document.getElementById('saveEditBtn').addEventListener('click', () => {
+            const code = document.getElementById('editProductCode').value;
+            const product = products.find(p => p.code === code);
+            if (product) {
+                product.name = document.getElementById('editProductName').value;
+                product.unit = document.getElementById('editProductUnit').value;
+                product.tp = parseFloat(document.getElementById('editProductTP').value) || 0;
+                product.saleableQty = parseInt(document.getElementById('editSaleableQty').value) || 0;
+                product.damageQty = parseInt(document.getElementById('editDamageQty').value) || 0;
+                product.freeQty = parseInt(document.getElementById('editFreeQty').value) || 0;
+
+                if (product.name && product.unit && product.tp > 0) {
+                    localStorage.setItem('products', JSON.stringify(products));
+                    updateDashboard();
+                    updateProductDropdown();
+                    updateSellTable();
+                    document.getElementById('editProductModal').classList.add('hidden');
+                    alert('Product updated successfully!');
+                } else {
+                    alert('Please fill all required fields with valid data.');
+                }
+            }
+        });
+
+        // Cancel edit
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            document.getElementById('editProductModal').classList.add('hidden');
+        });
+
+        // Delete product
+        function deleteProduct(code) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                products = products.filter(p => p.code !== code);
+                localStorage.setItem('products', JSON.stringify(products));
+                updateDashboard();
+                updateProductDropdown();
+                updateSellTable();
+                alert('Product deleted successfully!');
+            }
+        }
+
+        // Update profile (username and password)
+        document.getElementById('updateProfileBtn').addEventListener('click', () => {
+            const newUsername = document.getElementById('newUsername').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (newUsername && newPassword) {
+                credentials.username = newUsername;
+                credentials.password = newPassword;
+                localStorage.setItem('credentials', JSON.stringify(credentials));
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newPassword').value = '';
+                alert('Profile updated successfully! Please log in again with new credentials.');
+                isLoggedIn = false;
+                checkLogin();
+            } else {
+                alert('Please enter both a username and password.');
+            }
+        });
+
+        // Initial check
+        checkLogin();
     </script>
 </body>
 </html>
