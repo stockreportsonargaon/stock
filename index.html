@@ -1,0 +1,539 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shanto Style House - অ্যাডমিন & রিটেল প্যানেল</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+        .hidden { display: none; }
+        .cart-hidden { transform: translateX(100%); }
+        .cart-visible { transform: translateX(0); }
+        .btn { transition: all 0.3s ease; }
+        .btn:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Login Page -->
+    <div id="login-page" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 to-indigo-100">
+        <div class="max-w-md w-full bg-white p-8 rounded-xl shadow-2xl">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Shanto Style House</h1>
+            <div class="flex justify-center space-x-4 mb-6">
+                <button id="show-login" class="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 btn">লগইন</button>
+                <button id="show-register" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-400 btn">রেজিস্টার</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form">
+                <p class="text-center text-gray-600 mb-6">লগইন করো</p>
+                <div class="space-y-4">
+                    <select id="login-user-type" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                        <option value="retail">রিটেল (কাস্টমার)</option>
+                        <option value="admin">অ্যাডমিন</option>
+                    </select>
+                    <input type="text" id="login-username" placeholder="ইউজারনেম" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <input type="password" id="login-password" placeholder="পাসওয়ার্ড" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <button onclick="login()" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 btn">লগইন</button>
+                </div>
+                <p class="text-center mt-4 text-sm text-gray-500">
+                    ডেমো: অ্যাডমিন - admin/admin | রিটেল - user/user
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="hidden">
+                <p class="text-center text-gray-600 mb-6">নতুন অ্যাকাউন্ট তৈরি করো</p>
+                <div class="space-y-4">
+                    <select id="register-user-type" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                        <option value="retail">রিটেল (কাস্টমার)</option>
+                        <option value="admin">অ্যাডমিন</option>
+                    </select>
+                    <input type="text" id="register-username" placeholder="ইউজারনেম" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <input type="password" id="register-password" placeholder="পাসওয়ার্ড" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <input type="password" id="register-confirm-password" placeholder="পাসওয়ার্ড নিশ্চিত করো" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <button onclick="register()" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 btn">রেজিস্টার</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="hidden">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-purple-700 to-indigo-600 text-white py-4 sticky top-0 z-50 shadow-md">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Shanto Style House</h1>
+                <div class="flex space-x-4 items-center">
+                    <span id="welcome-user" class="text-sm"></span>
+                    <button onclick="logout()" class="bg-red-500 text-white px-4 py-1 rounded-lg hover:bg-red-600 btn">লগআউট</button>
+                    <button id="cart-btn" onclick="toggleCart()" class="bg-white text-purple-600 px-4 py-1 rounded-lg hover:bg-gray-100 btn hidden">কার্ট (<span id="cart-count">0</span>)</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Panel -->
+        <div id="admin-panel" class="container mx-auto px-4 py-8 hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">অ্যাডমিন প্যানেল</h2>
+            
+            <!-- Add Product Form -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">নতুন প্রোডাক্ট যোগ করো</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="product-name" placeholder="প্রোডাক্ট নাম" class="p-3 border rounded-lg">
+                    <input type="number" id="product-price" placeholder="মূল্য (৳)" class="p-3 border rounded-lg">
+                    <input type="text" id="product-image" placeholder="ইমেজ URL" class="p-3 border rounded-lg">
+                    <input type="text" id="product-category" placeholder="ক্যাটাগরি (যেমন: শার্ট, জ্যাকেট)" class="p-3 border rounded-lg">
+                </div>
+                <textarea id="product-desc" placeholder="বর্ণনা" class="w-full p-3 border rounded-lg mt-4" rows="3"></textarea>
+                <button onclick="addProduct()" class="mt-4 bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-green-700 btn">যোগ করো</button>
+            </div>
+
+            <!-- Product List for Edit/Delete -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">প্রোডাক্ট লিস্ট</h3>
+                <div id="admin-product-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- Sales View -->
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold mb-4">সেলস হিস্ট্রি</h3>
+                <button onclick="downloadSalesCSV()" class="mb-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 btn">সেলস CSV ডাউনলোড</button>
+                <ul id="sales-list" class="space-y-2"></ul>
+            </div>
+        </div>
+
+        <!-- Retail Panel -->
+        <div id="retail-panel" class="container mx-auto px-4 py-8 hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">রিটেল প্যানেল</h2>
+
+            <!-- Filter Section -->
+            <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+                <h3 class="text-xl font-semibold mb-4">প্রোডাক্ট ফিল্টার</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <select id="filter-category" class="p-3 border rounded-lg">
+                        <option value="">সব ক্যাটাগরি</option>
+                        <option value="শার্ট">শার্ট</option>
+                        <option value="জ্যাকেট">জ্যাকেট</option>
+                        <option value="শু">শু</option>
+                    </select>
+                    <input type="number" id="filter-price-min" placeholder="ন্যূনতম মূল্য" class="p-3 border rounded-lg">
+                    <input type="number" id="filter-price-max" placeholder="সর্বোচ্চ মূল্য" class="p-3 border rounded-lg">
+                </div>
+                <button onclick="filterProducts()" class="mt-4 bg-purple-600 text-white py-2 px-6 rounded-lg hover:bg-purple-700 btn">ফিল্টার করো</button>
+                <button onclick="resetFilter()" class="mt-4 ml-2 bg-gray-300 text-gray-800 py-2 px-6 rounded-lg hover:bg-gray-400 btn">রিসেট</button>
+            </div>
+
+            <!-- Products Section -->
+            <section id="products">
+                <h3 class="text-2xl font-semibold mb-6">উপলব্ধ প্রোডাক্টস</h3>
+                <div id="product-list" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+            </section>
+        </div>
+
+        <!-- Cart Sidebar -->
+        <div id="cart" class="fixed top-0 right-0 h-full w-80 bg-white shadow-xl p-6 transition-transform duration-300 cart-hidden z-50">
+            <h3 class="text-xl font-bold mb-4">কার্ট</h3>
+            <ul id="cart-items" class="space-y-2 mb-4"></ul>
+            <p class="font-semibold mb-4">টোটাল: ৳<span id="total">0</span></p>
+            <button onclick="checkout()" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 btn mb-2">চেকআউট</button>
+            <button onclick="toggleCart()" class="w-full bg-gray-300 text-gray-800 py-2 rounded-lg hover:bg-gray-400 btn">বন্ধ করো</button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-4 mt-12">
+            <div class="container mx-auto px-4 text-center">
+                <p>&copy; 2025 Shanto Style House. সর্বস্বত্ব সংরক্ষিত।</p>
+                <div class="flex justify-center space-x-4 mt-2">
+                    <a href="#" class="hover:text-yellow-300">ফেসবুক</a>
+                    <a href="#" class="hover:text-yellow-300">ইনস্টাগ্রাম</a>
+                    <a href="#" class="hover:text-yellow-300">টুইটার</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Data Storage
+        let products = JSON.parse(localStorage.getItem('products')) || [
+            { id: 1, name: 'ট্রেন্ডি শার্ট', price: 1500, image: 'https://via.placeholder.com/300x200?text=Trendy+Shirt', desc: 'স্টাইলিশ শার্ট', category: 'শার্ট' },
+            { id: 2, name: 'ডিজাইনার জ্যাকেট', price: 3000, image: 'https://via.placeholder.com/300x200?text=Designer+Jacket', desc: 'শীতের জ্যাকেট', category: 'জ্যাকেট' },
+            { id: 3, name: 'ক্যাজুয়াল শু', price: 2500, image: 'https://via.placeholder.com/300x200?text=Casual+Shoes', desc: 'কমফোর্টেবল শু', category: 'শু' }
+        ];
+        let sales = JSON.parse(localStorage.getItem('sales')) || [];
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let users = JSON.parse(localStorage.getItem('users')) || {
+            admin: { username: 'admin', password: 'admin', type: 'admin' },
+            user: { username: 'user', password: 'user', type: 'retail' }
+        };
+        let currentUser = null;
+
+        // Toggle Login/Register Forms
+        document.getElementById('show-login').addEventListener('click', () => {
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+        });
+        document.getElementById('show-register').addEventListener('click', () => {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+        });
+
+        function register() {
+            const type = document.getElementById('register-user-type').value;
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+
+            if (!username || !password || !confirmPassword) {
+                alert('সব ফিল্ড পূরণ করো!');
+                return;
+            }
+            if (password !== confirmPassword) {
+                alert('পাসওয়ার্ড মেলেনি!');
+                return;
+            }
+            if (users[username]) {
+                alert('ইউজারনেম ইতিমধ্যে ব্যবহৃত হয়েছে!');
+                return;
+            }
+
+            users[username] = { username, password, type };
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! লগইন করো।');
+            clearRegisterForm();
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+        }
+
+        function clearRegisterForm() {
+            document.getElementById('register-user-type').value = 'retail';
+            document.getElementById('register-username').value = '';
+            document.getElementById('register-password').value = '';
+            document.getElementById('register-confirm-password').value = '';
+        }
+
+        function login() {
+            const type = document.getElementById('login-user-type').value;
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            if (users[username] && users[username].password === password && users[username].type === type) {
+                currentUser = { username, type };
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('welcome-user').textContent = `স্বাগতম, ${username}!`;
+                
+                if (type === 'admin') {
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                    displayAdminProducts();
+                    viewSales();
+                } else {
+                    document.getElementById('retail-panel').classList.remove('hidden');
+                    document.getElementById('cart-btn').classList.remove('hidden');
+                    displayProducts();
+                }
+            } else {
+                alert('ভুল ইউজারনেম বা পাসওয়ার্ড!');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('retail-panel').classList.add('hidden');
+            document.getElementById('cart-btn').classList.add('hidden');
+            clearLoginFields();
+        }
+
+        function clearLoginFields() {
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+        }
+
+        // Admin Functions
+        function addProduct() {
+            if (currentUser.type !== 'admin') {
+                alert('শুধু অ্যাডমিন প্রোডাক্ট যোগ করতে পারে!');
+                return;
+            }
+            const name = document.getElementById('product-name').value;
+            const price = parseInt(document.getElementById('product-price').value);
+            const image = document.getElementById('product-image').value;
+            const category = document.getElementById('product-category').value;
+            const desc = document.getElementById('product-desc').value;
+
+            if (name && price && image && category && desc) {
+                const newProduct = {
+                    id: Date.now(),
+                    name,
+                    price,
+                    image,
+                    desc,
+                    category
+                };
+                products.push(newProduct);
+                localStorage.setItem('products', JSON.stringify(products));
+                alert('প্রোডাক্ট যোগ হয়েছে!');
+                clearProductForm();
+                displayAdminProducts();
+                displayProducts();
+            } else {
+                alert('সব ফিল্ড পূরণ করো!');
+            }
+        }
+
+        function editProduct(id) {
+            if (currentUser.type !== 'admin') {
+                alert('শুধু অ্যাডমিন প্রোডাক্ট এডিট করতে পারে!');
+                return;
+            }
+            const product = products.find(p => p.id === id);
+            if (product) {
+                document.getElementById('product-name').value = product.name;
+                document.getElementById('product-price').value = product.price;
+                document.getElementById('product-image').value = product.image;
+                document.getElementById('product-category').value = product.category;
+                document.getElementById('product-desc').value = product.desc;
+
+                const saveButton = document.createElement('button');
+                saveButton.textContent = 'আপডেট করো';
+                saveButton.className = 'mt-4 bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 btn';
+                saveButton.onclick = () => {
+                    product.name = document.getElementById('product-name').value;
+                    product.price = parseInt(document.getElementById('product-price').value);
+                    product.image = document.getElementById('product-image').value;
+                    product.category = document.getElementById('product-category').value;
+                    product.desc = document.getElementById('product-desc').value;
+                    localStorage.setItem('products', JSON.stringify(products));
+                    alert('প্রোডাক্ট আপডেট হয়েছে!');
+                    clearProductForm();
+                    displayAdminProducts();
+                    displayProducts();
+                    saveButton.remove();
+                };
+                document.getElementById('product-desc').parentElement.appendChild(saveButton);
+            }
+        }
+
+        function deleteProduct(id) {
+            if (currentUser.type !== 'admin') {
+                alert('শুধু অ্যাডমিন প্রোডাক্ট ডিলিট করতে পারে!');
+                return;
+            }
+            if (confirm('প্রোডাক্ট ডিলিট করতে চাও?')) {
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('products', JSON.stringify(products));
+                displayAdminProducts();
+                displayProducts();
+            }
+        }
+
+        function clearProductForm() {
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-price').value = '';
+            document.getElementById('product-image').value = '';
+            document.getElementById('product-category').value = '';
+            document.getElementById('product-desc').value = '';
+        }
+
+        function displayAdminProducts() {
+            const adminProductList = document.getElementById('admin-product-list');
+            adminProductList.innerHTML = '';
+            products.forEach(product => {
+                const div = document.createElement('div');
+                div.className = 'bg-gray-50 p-4 rounded-lg shadow';
+                div.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-32 object-cover rounded-t-lg">
+                    <h3 class="text-lg font-semibold mt-2">${product.name}</h3>
+                    <p class="text-gray-600">ক্যাটাগরি: ${product.category}</p>
+                    <p class="text-green-600 font-bold">৳${product.price}</p>
+                    <p class="text-gray-600">${product.desc}</p>
+                    <div class="flex space-x-2 mt-2">
+                        <button onclick="editProduct(${product.id})" class="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 btn">এডিট</button>
+                        <button onclick="deleteProduct(${product.id})" class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 btn">ডিলিট</button>
+                    </div>
+                `;
+                adminProductList.appendChild(div);
+            });
+        }
+
+        function viewSales() {
+            const salesList = document.getElementById('sales-list');
+            salesList.innerHTML = '';
+            if (sales.length === 0) {
+                salesList.innerHTML = '<li class="text-gray-500">কোনো সেলস নেই।</li>';
+            } else {
+                sales.forEach(sale => {
+                    const li = document.createElement('li');
+                    li.className = 'border p-2 rounded';
+                    li.innerHTML = `<strong>${sale.date}</strong>: ${sale.items.map(item => `${item.name} x${item.quantity}`).join(', ')} - টোটাল: ৳${sale.total}`;
+                    salesList.appendChild(li);
+                });
+            }
+        }
+
+        function downloadSalesCSV() {
+            if (sales.length === 0) {
+                alert('কোনো সেলস ডেটা নেই!');
+                return;
+            }
+            const headers = ['তারিখ', 'প্রোডাক্ট', 'পরিমাণ', 'টোটাল (৳)'];
+            const rows = sales.map(sale => [
+                sale.date,
+                sale.items.map(item => `${item.name} x${item.quantity}`).join('; '),
+                sale.items.reduce((sum, item) => sum + item.quantity, 0),
+                sale.total
+            ]);
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.join(','))
+            ].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sales_history.csv';
+            link.click();
+        }
+
+        // Retail Functions
+        function displayProducts() {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+            const filteredProducts = filterProducts();
+            if (filteredProducts.length === 0) {
+                productList.innerHTML = '<p class="text-gray-500 text-center">কোনো প্রোডাক্ট পাওয়া যায়নি।</p>';
+                return;
+            }
+            filteredProducts.forEach(product => {
+                const div = document.createElement('div');
+                div.className = 'bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition';
+                div.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-t-lg">
+                    <h3 class="text-xl font-semibold mt-4">${product.name}</h3>
+                    <p class="text-gray-600">ক্যাটাগরি: ${product.category}</p>
+                    <p class="text-gray-600 mt-2">${product.desc}</p>
+                    <p class="text-green-600 font-bold mt-2">৳${product.price}</p>
+                    <button onclick="addToCart(${product.id}, '${product.name}', ${product.price})" class="mt-4 w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 btn">কার্টে যোগ করো</button>
+                `;
+                productList.appendChild(div);
+            });
+        }
+
+        function filterProducts() {
+            const category = document.getElementById('filter-category').value;
+            const minPrice = parseInt(document.getElementById('filter-price-min').value) || 0;
+            const maxPrice = parseInt(document.getElementById('filter-price-max').value) || Infinity;
+
+            return products.filter(product => {
+                const matchCategory = category ? product.category === category : true;
+                const matchPrice = product.price >= minPrice && product.price <= maxPrice;
+                return matchCategory && matchPrice;
+            });
+        }
+
+        function resetFilter() {
+            document.getElementById('filter-category').value = '';
+            document.getElementById('filter-price-min').value = '';
+            document.getElementById('filter-price-max').value = '';
+            displayProducts();
+        }
+
+        function addToCart(id, name, price) {
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ id, name, price, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart();
+            alert(`${name} কার্টে যোগ হয়েছে!`);
+            toggleCart();
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `${item.name} x${item.quantity} - ৳${item.price * item.quantity}`;
+                cartItems.appendChild(li);
+                total += item.price * item.quantity;
+            });
+            document.getElementById('total').textContent = total;
+        }
+
+        function toggleCart() {
+            const cartDiv = document.getElementById('cart');
+            cartDiv.classList.toggle('cart-hidden');
+            cartDiv.classList.toggle('cart-visible');
+            updateCart();
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('কার্ট খালি!');
+            } else {
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const sale = {
+                    date: new Date().toLocaleString('bn-BD'),
+                    items: cart.map(item => ({ name: item.name, quantity: item.quantity })),
+                    total
+                };
+                sales.push(sale);
+                localStorage.setItem('sales', JSON.stringify(sales));
+                alert(`চেকআউট সাকসেসফুল! টোটাল: ৳${total}`);
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCart();
+                toggleCart();
+                if (currentUser.type === 'admin') viewSales();
+            }
+        }
+    </script>
+</body>
+</html>
